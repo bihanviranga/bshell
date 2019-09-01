@@ -1,3 +1,17 @@
+/*********************************************************/
+/* Includes */
+/*********************************************************/
+
+#include <sys/wait.h>
+// waitpid() and associated macros
+#include <unistd.h>
+// chdir, fork, exec, pid_t
+#include <stdlib.h>
+// malloc, realloc, free, exit, execvp, EXIT_SUCCESS, EXIT_FAILURE
+#include <stdio.h>
+// fprintf, printf, stderr, getchar, perror
+#include <string.h>
+// strcmp, strtok
 
 /*********************************************************/
 /* Forward Declarations */
@@ -7,6 +21,12 @@
 int bshell_cd(char **args);
 int bshell_help(char **args);
 int bshell_exit(char **args);
+
+/* Core functions */
+char *bshell_read_line();
+char **bshell_split_line(char *line);
+void bshell_loop();
+int bshell_execute(char **args);
 
 /*********************************************************/
 /* Constant Data */
@@ -63,7 +83,7 @@ int bshell_help(char **args) {
 	printf("Type program names and arguments, and hit enter.\n");
 	printf("The following are built-in:\n");
 
-	for (i = 0; i < bshell_num_builtins(); b++) {
+	for (i = 0; i < bshell_num_builtins(); i++) {
 		printf("  %s\n", builtin_str[i]);
 	}
 
@@ -220,4 +240,22 @@ int bshell_launch(char **args) {
 	}
 
 	return 1;
+}
+
+int bshell_execute(char **args) {
+	int i;
+
+	if (args[0] == NULL) {
+		// an empty command was entered
+		return 1;
+	}
+
+	// check if the command is a built-in
+	for (i = 0; i < bshell_num_builtins(); i++) {
+		if (strcmp(args[0], builtin_str[i]) == 0) {
+			return (*builtin_func[i])(args);
+		}
+	}
+
+	return bshell_launch(args);
 }
