@@ -107,3 +107,31 @@ char **bshell_split_line(char *line) {
 	tokens[position] = NULL;
 	return tokens;
 }
+
+int bshell_launch(char **args) {
+	pid_t pid, wpid;
+	int status;
+
+	pid = fork();
+	if (pid == 0) {
+		// this is the child
+		if (execvp(args[0], args) == -1) {
+			perror("bshell - execve");
+			// perror prints system error messages
+			// about the last encountered error.
+		}
+		exit(EXIT_FAILURE);
+	}
+	else if (pid < 0) {
+		// error in forking. PID = -1 
+		perror("bshell - fork");
+	}
+	else {
+		// parent process
+		do {
+			wpid = waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+
+	return 1;
+}
