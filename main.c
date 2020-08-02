@@ -41,7 +41,7 @@ void bshell_initialize();
 #define BSHELL_SETTINGS_FILE ".bshrc"
 #define BSHELL_SETTINGS_DELIM "="
 
-char *bshell_prompt_str = "> ";
+char bshell_prompt_str[50] = "> ";
 
 /* List of built-in commands */
 char *builtin_str[] = {
@@ -260,11 +260,13 @@ int bshell_execute(char **args) {
 
 void bshell_initialize() {
   FILE *bshrc;
+  size_t len = 0;
+  ssize_t read;
+
   char *setting_line = NULL;
   char *setting_key = NULL;
   char *setting_value = NULL;
-  size_t len = 0;
-  ssize_t read;
+  size_t setting_value_length = 0;
 
   bshrc = fopen(BSHELL_SETTINGS_FILE, "r");
   if (bshrc == NULL) {
@@ -276,7 +278,11 @@ void bshell_initialize() {
     setting_key = strtok(setting_line, BSHELL_SETTINGS_DELIM);
     if (strncmp(setting_key, "PROMPT", 6) == 0) {
       setting_value = strtok(NULL, BSHELL_SETTINGS_DELIM);
-      // printf("SETTING: %s = %s\n", setting_key, setting_value);
+      setting_value_length = strlen(setting_value);
+      if (setting_value[setting_value_length - 1] == '\n') {
+        setting_value[setting_value_length - 1] = 0;
+      }
+      strcpy(bshell_prompt_str, setting_value);
     }
   }
 
