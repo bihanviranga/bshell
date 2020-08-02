@@ -21,6 +21,7 @@
 int bshell_cd(char **args);
 int bshell_help(char **args);
 int bshell_exit(char **args);
+int bshell_reconfigure();
 
 /* Core functions */
 char *bshell_read_line();
@@ -47,13 +48,15 @@ char bshell_prompt_str[50] = "> ";
 char *builtin_str[] = {
     "cd",
     "help",
-    "exit"};
+    "exit",
+    "reconfigure"};
 
 /* Their corresponding functions */
 int (*builtin_func[])(char **) = {
     &bshell_cd,
     &bshell_help,
-    &bshell_exit};
+    &bshell_exit,
+    &bshell_reconfigure};
 
 /*********************************************************/
 /* Utility Functions */
@@ -96,6 +99,11 @@ int bshell_help(char **args) {
 
 int bshell_exit(char **args) {
   return 0;
+}
+
+int bshell_reconfigure() {
+  bshell_initialize();
+  return 1;
 }
 
 /*********************************************************/
