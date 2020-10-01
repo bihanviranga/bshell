@@ -285,6 +285,10 @@ void bshell_initialize() {
     if (setting_value[setting_value_length - 1] == '\n') {
       setting_value[setting_value_length - 1] = 0;
     }
+
+    if (strcmp(setting_name, "PROMPT") == 0) {
+      strcpy(bshell_prompt_str, setting_value);
+    }
   }
 
   fclose(bshrc);

@@ -1,7 +1,1 @@
-PROMPT value=user@system $
-ALIAS al_key=al_value
-
-ALIAS al_2=al_v_2
-
-NEW key=value
-
+PROMPT value=user@system $ 
