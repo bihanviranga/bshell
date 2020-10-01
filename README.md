@@ -7,7 +7,9 @@ This code was based on the very helpful tutorial found [here](https://brennan.io
 Supports reading config from a `.bshrc` file located in the same directory as executable (for now).
 Currently only 1 setting is supported.
 
-PROMPT : Set the shell's prompt by specifying `PROMPT=<your prompt here>` in the config file.
+Config is set in a `NAME key=value` format. For some config names, any name can be used for key since only value is read.
+
+PROMPT : Set the shell's prompt by specifying `PROMPT value=user@pc $ ` in the config file.
 
 ### Further reading:
 [fork vs exec](https://www.geeksforgeeks.org/difference-fork-exec/)

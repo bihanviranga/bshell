@@ -40,31 +40,23 @@ void bshell_initialize();
 #define BSHELL_TOK_DELIM " \t\r\n\a"
 
 #define BSHELL_SETTINGS_FILE ".bshrc"
-#define BSHELL_SETTINGS_DELIM "="
+#define BSHELL_SETTINGS_DELIM1 " "
+#define BSHELL_SETTINGS_DELIM2 "="
 
 char bshell_prompt_str[50] = "> ";
 
 /* List of built-in commands */
-char *builtin_str[] = {
-    "cd",
-    "help",
-    "exit",
-    "reconfigure"};
+char *builtin_str[] = {"cd", "help", "exit", "reconfigure"};
 
 /* Their corresponding functions */
-int (*builtin_func[])(char **) = {
-    &bshell_cd,
-    &bshell_help,
-    &bshell_exit,
-    &bshell_reconfigure};
+int (*builtin_func[])(char **) = {&bshell_cd, &bshell_help, &bshell_exit,
+                                  &bshell_reconfigure};
 
 /*********************************************************/
 /* Utility Functions */
 /*********************************************************/
 
-int bshell_num_builtins() {
-  return sizeof(builtin_str) / sizeof(char *);
-}
+int bshell_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
 
 /*********************************************************/
 /* Built-in function implementations */
@@ -97,9 +89,7 @@ int bshell_help(char **args) {
   return 1;
 }
 
-int bshell_exit(char **args) {
-  return 0;
-}
+int bshell_exit(char **args) { return 0; }
 
 int bshell_reconfigure() {
   bshell_initialize();
@@ -272,6 +262,7 @@ void bshell_initialize() {
   ssize_t read;
 
   char *setting_line = NULL;
+  char *setting_name = NULL;
   char *setting_key = NULL;
   char *setting_value = NULL;
   size_t setting_value_length = 0;
@@ -283,13 +274,19 @@ void bshell_initialize() {
   }
 
   while ((read = getline(&setting_line, &len, bshrc)) != -1) {
-    setting_key = strtok(setting_line, BSHELL_SETTINGS_DELIM);
-    if (strncmp(setting_key, "PROMPT", 6) == 0) {
-      setting_value = strtok(NULL, BSHELL_SETTINGS_DELIM);
-      setting_value_length = strlen(setting_value);
-      if (setting_value[setting_value_length - 1] == '\n') {
-        setting_value[setting_value_length - 1] = 0;
-      }
+    if (read <= 1) {
+      continue;
+    }
+    setting_name = strtok(setting_line, BSHELL_SETTINGS_DELIM1);
+    setting_key = strtok(NULL, BSHELL_SETTINGS_DELIM2);
+    setting_value = strtok(NULL, BSHELL_SETTINGS_DELIM2);
+    setting_value_length = strlen(setting_value);
+    // removing the newline character
+    if (setting_value[setting_value_length - 1] == '\n') {
+      setting_value[setting_value_length - 1] = 0;
+    }
+
+    if (strcmp(setting_name, "PROMPT") == 0) {
       strcpy(bshell_prompt_str, setting_value);
     }
   }
