@@ -2,6 +2,10 @@
 
 This code was based on the very helpful tutorial found [here](https://brennan.io/2015/01/16/write-a-shell-in-c/).
 
+### Installation
+
+Makefile is included. Run `make`.
+
 ### Configuration
 
 Supports reading config from a `.bshrc` file located in the same directory as executable (for now).
