@@ -1,100 +1,7 @@
-/*********************************************************/
-/* Includes */
-/*********************************************************/
-
-#include <sys/wait.h>
-// waitpid() and associated macros
-#include <unistd.h>
-// chdir, fork, exec, pid_t
-#include <stdlib.h>
-// malloc, realloc, free, exit, execvp, EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h>
-// fprintf, printf, stderr, getchar, perror
-#include <string.h>
-// strcmp, strtok
-
-/*********************************************************/
-/* Forward Declarations */
-/*********************************************************/
-
-/* Built-in shell commands */
-int bshell_cd(char **args);
-int bshell_help(char **args);
-int bshell_exit(char **args);
-int bshell_reconfigure();
-
-/* Core functions */
-char *bshell_read_line();
-char **bshell_split_line(char *line);
-void bshell_loop();
-int bshell_execute(char **args);
-void bshell_initialize();
-
-/*********************************************************/
-/* Constant Data */
-/*********************************************************/
-
-#define BSHELL_RL_BUFSIZE 1024
-
-#define BSHELL_TOK_BUFSIZE 64
-#define BSHELL_TOK_DELIM " \t\r\n\a"
-
-#define BSHELL_SETTINGS_FILE ".bshrc"
-#define BSHELL_SETTINGS_DELIM1 " "
-#define BSHELL_SETTINGS_DELIM2 "="
+#include "bshell.h"
+#include "bshell_builtin.h"
 
 char bshell_prompt_str[50] = "> ";
-
-/* List of built-in commands */
-char *builtin_str[] = {"cd", "help", "exit", "reconfigure"};
-
-/* Their corresponding functions */
-int (*builtin_func[])(char **) = {&bshell_cd, &bshell_help, &bshell_exit,
-                                  &bshell_reconfigure};
-
-/*********************************************************/
-/* Utility Functions */
-/*********************************************************/
-
-int bshell_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
-
-/*********************************************************/
-/* Built-in function implementations */
-/*********************************************************/
-
-int bshell_cd(char **args) {
-  if (args[1] == NULL) {
-    fprintf(stderr, "bshell : expected argument to \"cd\"\n");
-  } else {
-    if (chdir(args[1]) != 0) {
-      perror("bshell - cd");
-    }
-  }
-
-  return 1;
-}
-
-int bshell_help(char **args) {
-  int i;
-  printf("BSHELL\n");
-  printf("Based on Stephen Brennan's LSH\n");
-  printf("Type program names and arguments, and hit enter.\n");
-  printf("The following are built-in:\n");
-
-  for (i = 0; i < bshell_num_builtins(); i++) {
-    printf("  %s\n", builtin_str[i]);
-  }
-
-  printf("Use the man command for information on other programs.\n");
-  return 1;
-}
-
-int bshell_exit(char **args) { return 0; }
-
-int bshell_reconfigure() {
-  bshell_initialize();
-  return 1;
-}
 
 /*********************************************************/
 /* Core functions */
@@ -118,7 +25,7 @@ void bshell_loop() {
   int status;
 
   do {
-    printf(bshell_prompt_str);
+    printf("%s", bshell_prompt_str);
     line = bshell_read_line();
     args = bshell_split_line(line);
     status = bshell_execute(args);
