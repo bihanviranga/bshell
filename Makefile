@@ -1,15 +1,14 @@
+# Recursive wildcard function taken from https://stackoverflow.com/a/18258352
+
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
 CC = gcc
 
 CFLAGS = -Wall -g -Iinclude
 
 TARGET = bshell
 
-SRC = src/main.c \
-      src/builtin/builtin.c \
-      src/builtin/cd.c \
-      src/builtin/help.c \
-      src/builtin/exit.c \
-      src/builtin/reconfigure.c
+SRC = $(call rwildcard,src,*.c)
 
 OBJ = $(SRC:.c=.o)
 
