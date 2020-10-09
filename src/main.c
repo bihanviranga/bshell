@@ -54,6 +54,11 @@ char *bshell_read_line() {
     // Read a character
     c = getchar();
 
+    // Ctrl+D makes the shell loop infinitely.
+    // A quick printf reveals that ctrl+d makes c equal to -1.
+    if (c == -1) {
+      exit(EXIT_SUCCESS);
+    }
     // If we hit EOF, replace it with a null character and return
     // Iterate through buffer and assign characters as they come from
     // getchar.
