@@ -53,17 +53,14 @@ char *bshell_read_line() {
   while (1) {
     // Read a character
     c = getchar();
-
-    // Ctrl+D makes the shell loop infinitely.
-    // A quick printf reveals that ctrl+d makes c equal to -1.
-    if (c == -1) {
+    // Fixing Ctrl+D making the shell loop infinitely.
+    if (c == EOF) {
       exit(EXIT_SUCCESS);
     }
-    // If we hit EOF, replace it with a null character and return
     // Iterate through buffer and assign characters as they come from
     // getchar.
     // When the line ends, put a \0 there to denote end.
-    if (c == EOF || c == '\n') {
+    if (c == '\n') {
       buffer[position] = '\0';
       return buffer;
     } else {
